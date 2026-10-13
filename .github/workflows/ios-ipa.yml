@@ -41,12 +41,15 @@ jobs:
       - name: Analyze (dili mo-fail ang build kung naay info)
         run: flutter analyze || true
 
-      # Gikinahanglan para sa iOS pods (file_picker, local_auth)
+      # Gikinahanglan para sa iOS artifacts (Flutter engine, etc.)
+      - name: Precache iOS artifacts
+        run: flutter precache --ios
+
+      # Gikinahanglan para sa iOS pods (file_picker, local_auth).
+      # Ang macOS runner naa nay CocoaPods preinstalled, ayaw na i-gem install.
       - name: Pod install
         working-directory: ios
-        run: |
-          sudo gem install cocoapods -n /usr/local/bin || true
-          pod install --repo-update
+        run: pod install --repo-update
 
       # Unsigned IPA — pwede i-install via Sideloadly / AltStore / TrollStore,
       # o i-re-sign sa imong kaugalingon nga certificate.
