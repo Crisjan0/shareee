@@ -1,0 +1,21 @@
+name: chameleon_p2p_app
+description: A mobile app with accounts, sandboxed files, security gate, chameleon UI, and P2P sharing.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  local_auth: ^2.3.0        # For Biometric Face/Fingerprint
+  file_picker: ^8.1.4     # For picking actual files from device storage
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
