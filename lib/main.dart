@@ -11,11 +11,79 @@ void main() {
 }
 
 // Global Notifier para sa Color Theme / Chameleon UI Sync
+// Default: classical deep navy (elegant, dili hayag)
 ValueNotifier<Color> appThemeColor =
-    ValueNotifier<Color>(const Color(0xFF3F51B5));
+    ValueNotifier<Color>(const Color(0xFF1E2A4A));
 
 // Port sa P2P server — usa ra ka lugar para dali usbon
 const int p2pPort = 8888;
+
+// ==========================================
+// ELEGANT CLASSICAL DESIGN TOKENS
+// ==========================================
+const Color kIvory = Color(0xFFF6F0E2);
+const Color kParchment = Color(0xFFFCF9F1);
+const Color kCharcoal = Color(0xFF1C1A16);
+const Color kCharcoalSoft = Color(0xFF2E2A24);
+const Color kGold = Color(0xFFC6A15B);
+const Color kGoldDeep = Color(0xFF9A7B2D);
+const Color kGoldSoft = Color(0xFFEADFC3);
+const Color kStoneGrey = Color(0xFF8A8175);
+
+// Classical chameleon palette (muted, elegant — dili neon)
+const List<Color> kClassicalPalette = [
+  Color(0xFF1E2A4A), // Royal Navy
+  Color(0xFF5C1F24), // Burgundy
+  Color(0xFF2F4A3C), // Forest
+  Color(0xFF4A3563), // Plum
+  Color(0xFF8A6D2B), // Antique Gold
+  Color(0xFF2F5D5A), // Slate Teal
+];
+
+TextStyle classicalHeading({double size = 16, Color? color}) {
+  return TextStyle(
+    fontFamily: 'Georgia',
+    fontSize: size,
+    fontWeight: FontWeight.w700,
+    letterSpacing: 1.2,
+    color: color ?? kCharcoal,
+  );
+}
+
+TextStyle classicalSmallCaps({double size = 11, Color? color}) {
+  return TextStyle(
+    fontFamily: 'Georgia',
+    fontSize: size,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 2.2,
+    color: color ?? kStoneGrey,
+  );
+}
+
+class GoldDivider extends StatelessWidget {
+  final double width;
+  const GoldDivider({super.key, this.width = 48});
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(height: 1, width: width, color: kGoldSoft),
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 8),
+          width: 6,
+          height: 6,
+          decoration: BoxDecoration(
+            color: kGold,
+            shape: BoxShape.circle,
+            border: Border.all(color: kGoldDeep, width: 0.8),
+          ),
+        ),
+        Container(height: 1, width: width, color: kGoldSoft),
+      ],
+    );
+  }
+}
 
 // Helper: kuha filename nga mo-work sa Windows (\) ug Android/Linux (/)
 String baseNameOf(String fullPath) {
@@ -47,13 +115,125 @@ class ChameleonP2PApp extends StatelessWidget {
     return ValueListenableBuilder<Color>(
       valueListenable: appThemeColor,
       builder: (context, currentColor, child) {
+        final scheme = ColorScheme.fromSeed(
+          seedColor: currentColor,
+          brightness: Brightness.light,
+        );
         return MaterialApp(
           title: 'Chameleon P2P Share',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             primaryColor: currentColor,
-            colorScheme: ColorScheme.fromSeed(seedColor: currentColor),
+            colorScheme: scheme.copyWith(
+              primary: currentColor,
+              secondary: kGold,
+              surface: kParchment,
+            ),
+            scaffoldBackgroundColor: kIvory,
             useMaterial3: true,
+            appBarTheme: const AppBarTheme(
+              backgroundColor: kCharcoal,
+              foregroundColor: Color(0xFFF3EAD3),
+              centerTitle: true,
+              elevation: 0,
+              titleTextStyle: TextStyle(
+                fontFamily: 'Georgia',
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 2.0,
+              ),
+            ),
+            cardTheme: CardThemeData(
+              color: kParchment,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+                side: const BorderSide(color: kGoldSoft, width: 1),
+              ),
+            ),
+            inputDecorationTheme: InputDecorationTheme(
+              filled: true,
+              fillColor: Colors.white,
+              labelStyle: const TextStyle(color: kStoneGrey, fontSize: 13),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide:
+                    const BorderSide(color: kGoldSoft, width: 1.2),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide:
+                    const BorderSide(color: kGoldDeep, width: 1.6),
+              ),
+              prefixIconColor: kGoldDeep,
+            ),
+            elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: kCharcoal,
+                foregroundColor: const Color(0xFFF3EAD3),
+                minimumSize: const Size.fromHeight(52),
+                textStyle: const TextStyle(
+                  fontFamily: 'Georgia',
+                  letterSpacing: 1.6,
+                  fontWeight: FontWeight.w700,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  side: const BorderSide(color: kGoldDeep, width: 1),
+                ),
+              ),
+            ),
+            outlinedButtonTheme: OutlinedButtonThemeData(
+              style: OutlinedButton.styleFrom(
+                foregroundColor: kCharcoal,
+                minimumSize: const Size.fromHeight(52),
+                side: const BorderSide(color: kGoldDeep, width: 1.2),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                textStyle: const TextStyle(
+                  fontFamily: 'Georgia',
+                  letterSpacing: 1.2,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            chipTheme: ChipThemeData(
+              backgroundColor: Colors.white,
+              selectedColor: kCharcoal,
+              secondarySelectedColor: kCharcoal,
+              labelStyle: const TextStyle(fontSize: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: const BorderSide(color: kGoldSoft),
+              ),
+            ),
+            dialogTheme: DialogThemeData(
+              backgroundColor: kParchment,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18),
+                side: const BorderSide(color: kGoldSoft, width: 1.2),
+              ),
+              titleTextStyle: classicalHeading(size: 16),
+              contentTextStyle:
+                  const TextStyle(color: kCharcoalSoft, fontSize: 13.5, height: 1.5),
+            ),
+            progressIndicatorTheme: const ProgressIndicatorThemeData(
+              color: kGoldDeep,
+              linearTrackColor: kGoldSoft,
+            ),
+            snackBarTheme: SnackBarThemeData(
+              backgroundColor: kCharcoal,
+              contentTextStyle: const TextStyle(
+                color: Color(0xFFF3EAD3),
+                fontFamily: 'Georgia',
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: const BorderSide(color: kGoldDeep),
+              ),
+              behavior: SnackBarBehavior.floating,
+            ),
           ),
           home: const LoginScreen(),
         );
@@ -117,39 +297,98 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("P2P Login")),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
+      backgroundColor: kIvory,
+      body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.lock_person,
-                    size: 80, color: Colors.blueAccent),
-                const SizedBox(height: 20),
-                TextField(
-                  controller: _userController,
-                  decoration: const InputDecoration(
-                      labelText: "Username (e.g. Sss)",
-                      border: OutlineInputBorder()),
+                Text("EST. MMXXVI",
+                    style: classicalSmallCaps(size: 11, color: kGoldDeep)),
+                const SizedBox(height: 8),
+                Text("CHAMELEON",
+                    style: classicalHeading(size: 30, color: kCharcoal)),
+                const Text("P2P  SHARE",
+                    style: TextStyle(
+                      fontFamily: 'Georgia',
+                      fontSize: 13,
+                      letterSpacing: 6,
+                      color: kStoneGrey,
+                    )),
+                const SizedBox(height: 12),
+                const GoldDivider(width: 70),
+                const SizedBox(height: 28),
+                Container(
+                  padding: const EdgeInsets.all(26),
+                  decoration: BoxDecoration(
+                    color: kParchment,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: kGoldSoft, width: 1.2),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x1A1C1A16),
+                        blurRadius: 24,
+                        offset: Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 84,
+                        height: 84,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: kCharcoal,
+                          border: Border.all(color: kGold, width: 2),
+                        ),
+                        child: const Icon(Icons.shield_outlined,
+                            size: 40, color: Color(0xFFF3EAD3)),
+                      ),
+                      const SizedBox(height: 16),
+                      Text("Private Salon",
+                          style: classicalHeading(
+                              size: 15, color: kCharcoal)),
+                      Text("Sign in to enter",
+                          style: classicalSmallCaps(size: 10)),
+                      const SizedBox(height: 20),
+                      TextField(
+                        controller: _userController,
+                        decoration: const InputDecoration(
+                          labelText: "Username",
+                          hintText: "e.g. Sss",
+                          prefixIcon: Icon(Icons.person_outline),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      TextField(
+                        controller: _passController,
+                        obscureText: true,
+                        onSubmitted: (_) => _handleLogin(),
+                        decoration: const InputDecoration(
+                          labelText: "Password",
+                          hintText: "min. 4 characters",
+                          prefixIcon: Icon(Icons.key_outlined),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 22),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _handleLogin,
+                          child: const Text("ENTER"),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _passController,
-                  obscureText: true,
-                  onSubmitted: (_) => _handleLogin(),
-                  decoration: const InputDecoration(
-                      labelText: "Password (min. 4 chars)",
-                      border: OutlineInputBorder()),
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: _handleLogin,
-                  style: ElevatedButton.styleFrom(
-                      minimumSize: const Size.fromHeight(50)),
-                  child: const Text("Login"),
-                ),
+                const SizedBox(height: 18),
+                Text("Face & fingerprint guarded • Wi-Fi salon",
+                    style: classicalSmallCaps(size: 9)),
               ],
             ),
           ),
@@ -216,11 +455,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int _getTotalSize() {
     int total = 0;
     for (var file in userFiles) {
-      try {
-        if (file.existsSync()) total += file.lengthSync();
-      } catch (_) {}
+      total += _fileSizeOf(file);
     }
     return total;
+  }
+
+  int _fileSizeOf(File file) {
+    try {
+      if (file.existsSync()) return file.lengthSync();
+    } catch (_) {}
+    return 0;
   }
 
   Future<void> _pickFiles() async {
@@ -244,17 +488,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Pilia ang UI Theme Color"),
-          content: Wrap(
-            spacing: 15,
-            runSpacing: 15,
+          title: const Text("Atelier Palette"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              _colorBox(Colors.red),
-              _colorBox(Colors.green),
-              _colorBox(Colors.blue),
-              _colorBox(Colors.purple),
-              _colorBox(Colors.orange),
-              _colorBox(Colors.teal),
+              Text("CLASSICAL TONES",
+                  style: classicalSmallCaps(size: 10, color: kGoldDeep)),
+              const SizedBox(height: 4),
+              const GoldDivider(width: 40),
+              const SizedBox(height: 14),
+              Wrap(
+                spacing: 14,
+                runSpacing: 14,
+                children: [
+                  for (final c in kClassicalPalette) _colorBox(c),
+                ],
+              ),
             ],
           ),
         );
@@ -263,15 +512,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _colorBox(Color color) {
+    final selected = appThemeColor.value == color;
     return GestureDetector(
       onTap: () {
         appThemeColor.value = color;
         Navigator.pop(context);
       },
       child: Container(
-          width: 45,
-          height: 45,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+        width: 46,
+        height: 46,
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: selected ? kGoldDeep : kGold,
+            width: selected ? 3 : 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.22),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: selected
+            ? const Icon(Icons.check, color: Color(0xFFF3EAD3), size: 20)
+            : null,
+      ),
     );
   }
 
@@ -305,34 +573,61 @@ class _DashboardScreenState extends State<DashboardScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Confirm Transfer & UI Sync"),
+          title: const Text("Seal of Transfer"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Total Payload: $payloadText"),
-              Text("Files: ${userFiles.length}"),
-              const SizedBox(height: 10),
-              Text("Mode: $transferMode"),
-              const SizedBox(height: 15),
-              const Text("Proceed to Biometric & Face Verification?"),
+              Center(child: Text("INVENTORY",
+                  style: classicalSmallCaps(
+                      size: 10, color: kGoldDeep))),
+              const SizedBox(height: 4),
+              const GoldDivider(width: 36),
+              const SizedBox(height: 12),
+              _ledgerRow("Payload", payloadText),
+              _ledgerRow("Pieces", "${userFiles.length}"),
+              _ledgerRow("Via", transferMode),
+              const SizedBox(height: 12),
+              const Text(
+                "Proceed to face & fingerprint verification?",
+                style: TextStyle(fontStyle: FontStyle.italic),
+              ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel"),
+              child: const Text("Decline",
+                  style: TextStyle(color: kStoneGrey)),
             ),
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
                 _runBiometricVerification();
               },
-              child: const Text("Verify"),
+              child: const Text("VERIFY"),
             ),
           ],
         );
       },
+    );
+  }
+
+  Widget _ledgerRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label.toUpperCase(),
+              style: classicalSmallCaps(size: 10)),
+          Text(value,
+              style: const TextStyle(
+                  fontFamily: 'Georgia',
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13)),
+        ],
+      ),
     );
   }
 
@@ -457,53 +752,70 @@ class _DashboardScreenState extends State<DashboardScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text("Send via $transferMode"),
+          title: Text("Dispatch via $transferMode"),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Center(child: Text("SALON SEAL",
+                    style: classicalSmallCaps(
+                        size: 10, color: kGoldDeep))),
+                const SizedBox(height: 4),
+                const GoldDivider(width: 36),
+                const SizedBox(height: 12),
                 Row(
                   children: [
-                    const Text("UI Theme: "),
+                    Text("MOTIF  ",
+                        style: classicalSmallCaps(size: 10)),
                     CircleAvatar(
-                        backgroundColor: Theme.of(context).primaryColor,
+                        backgroundColor: appThemeColor.value,
                         radius: 12),
                     const SizedBox(width: 8),
-                    Text(themeToHex(Theme.of(context).primaryColor),
-                        style: const TextStyle(fontSize: 12)),
+                    Text(themeToHex(appThemeColor.value),
+                        style: const TextStyle(
+                            fontSize: 12, color: kStoneGrey)),
                   ],
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
                 Text(
-                    "Files: ${userFiles.length} (${(_getTotalSize() / 1024).toStringAsFixed(2)} KB)"),
+                    "${userFiles.length} pieces (${(_getTotalSize() / 1024).toStringAsFixed(2)} KB)",
+                    style: const TextStyle(
+                        fontFamily: 'Georgia',
+                        fontWeight: FontWeight.w700)),
                 const SizedBox(height: 8),
                 const Text(
-                  "Pahinumdom: ang receiver kay mo-open sa imong server URL sa browser, o gamiton ang 'Receive' button sulod ani nga app.",
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                  "The receiver may enter through a browser, or through the Receive button within this salon.",
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: kStoneGrey,
+                      fontStyle: FontStyle.italic),
                 ),
-                const SizedBox(height: 15),
-                const Text("Imong server IP (ipakita sa receiver):"),
-                const SizedBox(height: 8),
+                const SizedBox(height: 14),
+                Text("SALON ADDRESS",
+                    style:
+                        classicalSmallCaps(size: 10, color: kGoldDeep)),
+                const SizedBox(height: 6),
                 TextField(
                   controller: ipController,
                   readOnly: true,
                   decoration: const InputDecoration(
-                    labelText: "Sender IP (imohang IP)",
+                    labelText: "Sender IP",
                     border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.wifi),
+                    prefixIcon: Icon(Icons.wifi_outlined),
                   ),
                 ),
-                const SizedBox(height: 15),
-                const Text("Available IPs:",
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                Text("KNOWN ADDRESSES",
+                    style:
+                        classicalSmallCaps(size: 10, color: kGoldDeep)),
                 const SizedBox(height: 8),
                 Wrap(
                   spacing: 8,
                   children: [
                     ActionChip(
                       avatar: const Icon(Icons.check,
-                          color: Colors.green, size: 16),
+                          color: Color(0xFF2F4A3C), size: 16),
                       label: Text(localIpAddress),
                       onPressed: () => ipController.text = localIpAddress,
                     ),
@@ -519,15 +831,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel"),
+              child: const Text("Decline",
+                  style: TextStyle(color: kStoneGrey)),
             ),
             ElevatedButton.icon(
               onPressed: () {
                 Navigator.pop(context);
                 _startHotspotServerAndSend();
               },
-              icon: const Icon(Icons.send, size: 16),
-              label: const Text("Send"),
+              icon: const Icon(Icons.send_outlined, size: 16),
+              label: const Text("DISPATCH"),
             ),
           ],
         );
@@ -613,18 +926,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
               await request.response.close();
               return;
             }
-            final file = servedSnapshot[idx];
+            final fileIdx = idx;
+            final file = servedSnapshot[fileIdx];
             if (!file.existsSync()) {
               request.response.statusCode = HttpStatus.notFound;
               request.response.write("File wala na makita.");
               await request.response.close();
               if (mounted) {
-                setState(() => serveStatus[idx!] = "error");
+                setState(() => serveStatus[fileIdx] = "error");
               }
               return;
             }
             final name = baseNameOf(file.path);
-            final total = serveTotals[idx];
+            final total = serveTotals[fileIdx];
             final clientIp =
                 request.connectionInfo?.remoteAddress.address ?? "unknown";
 
@@ -637,12 +951,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
             if (mounted) {
               setState(() {
-                serveStatus[idx!] = "serving";
+                serveStatus[fileIdx] = "serving";
                 lastClientIp = clientIp;
                 // reset kung balik-download
-                if (serveProgress[idx] >= 1.0) {
-                  serveProgress[idx] = 0.0;
-                  serveSent[idx] = 0;
+                if (serveProgress[fileIdx] >= 1.0) {
+                  serveProgress[fileIdx] = 0.0;
+                  serveSent[fileIdx] = 0;
                 }
               });
             }
@@ -653,10 +967,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 request.response.add(chunk);
                 if (mounted) {
                   setState(() {
-                    serveSent[idx!] += chunk.length;
+                    serveSent[fileIdx] += chunk.length;
                     if (total > 0) {
-                      serveProgress[idx!] =
-                          (serveSent[idx!] / total).clamp(0.0, 1.0);
+                      serveProgress[fileIdx] =
+                          (serveSent[fileIdx] / total).clamp(0.0, 1.0);
                     }
                   });
                 }
@@ -664,8 +978,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
               await request.response.close();
               if (mounted) {
                 setState(() {
-                  serveProgress[idx!] = 1.0;
-                  serveStatus[idx!] = "done";
+                  serveProgress[fileIdx] = 1.0;
+                  serveStatus[fileIdx] = "done";
                   serveDoneCount =
                       serveStatus.where((s) => s == "done").length;
                 });
@@ -676,7 +990,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 await request.response.close();
               } catch (_) {}
               if (mounted) {
-                setState(() => serveStatus[idx!] = "error");
+                setState(() => serveStatus[fileIdx] = "error");
               }
             }
             return;
@@ -728,30 +1042,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
       return;
     }
 
-    // Awtomatikong usabon ang color pag-send (chameleon effect)
-    List<Color> dynamicColors = [
-      Colors.red,
-      Colors.green,
-      Colors.blue,
-      Colors.purple,
-      Colors.orange,
-      Colors.teal
-    ];
+    // Awtomatikong usabon ang color pag-send (classical chameleon effect)
     appThemeColor.value =
-        dynamicColors[Random().nextInt(dynamicColors.length)];
+        kClassicalPalette[Random().nextInt(kClassicalPalette.length)];
 
     if (!mounted) return;
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Hotspot Server Active!"),
-          content: Text(
-              "Aktibo na ang server sa http://$localIpAddress:$p2pPort\n\nAng UI color kay ${themeToHex(appThemeColor.value)} — ma-sync ni sa receiver kung gamiton nila ang Receive button.\n\nBrowser pwede pud mo-download (lista sa tanan files)."),
+          title: const Text("The Salon Is Open"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const GoldDivider(width: 40),
+              const SizedBox(height: 12),
+              Text(
+                  "The salon now receives guests at\nhttp://$localIpAddress:$p2pPort\n\nMotif ${themeToHex(appThemeColor.value)} shall adorn the receiver's salon.\n\nBrowsers may also partake of the collection.",
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(height: 1.6)),
+            ],
+          ),
           actions: [
             ElevatedButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("OK"),
+              child: const Text("GRACIAS"),
             ),
           ],
         );
@@ -791,22 +1106,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Receive Files"),
+        title: const Text("Enter a Salon"),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            const GoldDivider(width: 36),
+            const SizedBox(height: 10),
             const Text(
-              "Isulat ang Sender IP (makita sa ilang Dashboard):",
-              style: TextStyle(fontSize: 13),
+              "Inscribe the host's address, as displayed upon their salon wall:",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 13,
+                  fontStyle: FontStyle.italic,
+                  height: 1.5),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             TextField(
               controller: ipController,
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
-                labelText: "Sender IP",
+                labelText: "Host Address",
                 border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.wifi),
+                prefixIcon: Icon(Icons.wifi_outlined),
               ),
             ),
           ],
@@ -814,10 +1135,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel")),
+              child: const Text("Decline",
+                  style: TextStyle(color: kStoneGrey))),
           ElevatedButton.icon(
-            icon: const Icon(Icons.download, size: 16),
-            label: const Text("Connect"),
+            icon: const Icon(Icons.download_outlined, size: 16),
+            label: const Text("ENTER"),
             onPressed: () {
               Navigator.pop(context);
               _receiveFromSender(ipController.text.trim());
@@ -905,21 +1227,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Color currentTheme = Theme.of(context).primaryColor;
-
     return Scaffold(
+      backgroundColor: kIvory,
       appBar: AppBar(
-        title: Text("${widget.username}'s Dashboard"),
-        backgroundColor: currentTheme,
-        foregroundColor: Colors.white,
+        title: Column(
+          children: [
+            Text(widget.username.toUpperCase(),
+                style: const TextStyle(
+                    fontFamily: 'Georgia',
+                    fontSize: 15,
+                    letterSpacing: 3,
+                    fontWeight: FontWeight.w700)),
+            Text("PRIVATE SALON",
+                style: classicalSmallCaps(
+                    size: 9, color: const Color(0xFFC6A15B))),
+          ],
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.palette),
+            icon: const Icon(Icons.palette_outlined, size: 22),
             onPressed: _openColorPicker,
-            tooltip: "Color Picker",
+            tooltip: "Atelier Palette",
           ),
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout_outlined, size: 22),
             onPressed: () {
               _stopServer();
               Navigator.pushReplacement(
@@ -931,31 +1262,53 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.fromLTRB(18, 14, 18, 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Card(
-              elevation: 2,
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 14, vertical: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("Transfer Mode: ",
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                    const SizedBox(width: 10),
-                    ChoiceChip(
-                      label: const Text("WiFi/Hotspot"),
-                      selected: transferMode == "WiFi/Hotspot",
-                      onSelected: (val) =>
-                          setState(() => transferMode = "WiFi/Hotspot"),
-                    ),
-                    const SizedBox(width: 8),
-                    ChoiceChip(
-                      label: const Text("Bluetooth"),
-                      selected: transferMode == "Bluetooth",
-                      onSelected: (val) =>
-                          setState(() => transferMode = "Bluetooth"),
+                    Text("TRANSFER SALON",
+                        style: classicalSmallCaps(
+                            size: 10, color: kGoldDeep)),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        ChoiceChip(
+                          label: const Text("WiFi / Hotspot"),
+                          selected: transferMode == "WiFi/Hotspot",
+                          selectedColor: kCharcoal,
+                          labelStyle: TextStyle(
+                            color: transferMode == "WiFi/Hotspot"
+                                ? const Color(0xFFF3EAD3)
+                                : kCharcoal,
+                            fontFamily: 'Georgia',
+                            fontSize: 12,
+                          ),
+                          onSelected: (val) =>
+                              setState(() => transferMode = "WiFi/Hotspot"),
+                        ),
+                        const SizedBox(width: 8),
+                        ChoiceChip(
+                          label: const Text("Bluetooth"),
+                          selected: transferMode == "Bluetooth",
+                          selectedColor: kCharcoal,
+                          labelStyle: TextStyle(
+                            color: transferMode == "Bluetooth"
+                                ? const Color(0xFFF3EAD3)
+                                : kCharcoal,
+                            fontFamily: 'Georgia',
+                            fontSize: 12,
+                          ),
+                          onSelected: (val) =>
+                              setState(() => transferMode = "Bluetooth"),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -964,33 +1317,74 @@ class _DashboardScreenState extends State<DashboardScreen> {
             if (transferMode == "Bluetooth")
               Container(
                 margin: const EdgeInsets.only(top: 8),
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 12, vertical: 10),
                 decoration: BoxDecoration(
-                    color: Colors.orange[100],
-                    borderRadius: BorderRadius.circular(8)),
-                child: const Text(
-                  "Pahinumdom: Bluetooth wala pa na-suportahan. Palihog switch sa WiFi/Hotspot para maka-send.",
-                  style: TextStyle(fontSize: 12),
+                  color: const Color(0xFFF3E4C3),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: kGold, width: 1),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.info_outline,
+                        size: 16, color: kGoldDeep),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        "Bluetooth is not yet received in this salon. Please return to WiFi / Hotspot.",
+                        style: TextStyle(
+                            fontSize: 12, color: kCharcoalSoft, height: 1.4),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(8)),
+                color: kCharcoal,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: kGoldDeep, width: 1),
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                      serverRunning
-                          ? "Server Running ($transferMode):"
-                          : "Receiver Active ($transferMode):"),
-                  Flexible(
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        serverRunning
+                            ? "SALON OPEN"
+                            : "SALON ADDRESS",
+                        style: classicalSmallCaps(
+                            size: 9,
+                            color: const Color(0xFFC6A15B)),
+                      ),
+                      Text(
+                        serverRunning
+                            ? "Receivers may now enter"
+                            : transferMode,
+                        style: const TextStyle(
+                            color: Color(0xFFF3EAD3), fontSize: 12),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: kGold, width: 1),
+                    ),
                     child: Text("$localIpAddress:$p2pPort",
-                        style: TextStyle(
-                            color: currentTheme,
-                            fontWeight: FontWeight.bold)),
+                        style: const TextStyle(
+                            color: Color(0xFFF3EAD3),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 13,
+                            letterSpacing: 0.6)),
                   ),
                 ],
               ),
@@ -1001,43 +1395,256 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: Row(
                   children: [
                     const Icon(Icons.check_circle,
-                        color: Colors.green, size: 16),
+                        color: Color(0xFF2F4A3C), size: 16),
                     const SizedBox(width: 6),
                     const Expanded(
-                      child: Text("Server aktibo — pwede na mo-connect ang receiver.",
-                          style: TextStyle(fontSize: 12)),
+                      child: Text("The salon is open — receivers may enter.",
+                          style: TextStyle(
+                              fontSize: 12, color: kCharcoalSoft)),
                     ),
                     TextButton.icon(
                       onPressed: _stopServer,
-                      icon: const Icon(Icons.stop,
-                          size: 16, color: Colors.red),
-                      label: const Text("Stop",
-                          style: TextStyle(color: Colors.red)),
+                      icon: const Icon(Icons.stop_circle_outlined,
+                          size: 16, color: Color(0xFF5C1F24)),
+                      label: const Text("Close",
+                          style: TextStyle(
+                              color: Color(0xFF5C1F24),
+                              fontFamily: 'Georgia',
+                              letterSpacing: 1)),
                     ),
                   ],
                 ),
               ),
-            const SizedBox(height: 20),
-            const Text("Queued Files:",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            // BAG-O: Send/Upload progress card (sender side)
+            if (serverRunning && servedSnapshot.isNotEmpty)
+              Card(
+                margin: const EdgeInsets.only(top: 8),
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(7),
+                            decoration: BoxDecoration(
+                              color: kCharcoal,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: kGold, width: 1),
+                            ),
+                            child: const Icon(Icons.upload_outlined,
+                                size: 16,
+                                color: Color(0xFFF3EAD3)),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "DISPATCH LEDGER",
+                                  style: classicalSmallCaps(
+                                      size: 9, color: kGoldDeep),
+                                ),
+                                Text(
+                                  "$serveDoneCount of ${servedSnapshot.length} delivered",
+                                  style: classicalHeading(size: 13),
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (lastClientIp.isNotEmpty)
+                            Text("→ $lastClientIp",
+                                style: const TextStyle(
+                                    fontSize: 11, color: kStoneGrey)),
+                          IconButton(
+                            icon: const Icon(Icons.refresh,
+                                size: 18, color: kGoldDeep),
+                            tooltip: "Reset progress",
+                            onPressed: _resetServeProgress,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      LinearProgressIndicator(
+                        value: servedSnapshot.isEmpty
+                            ? 0.0
+                            : serveDoneCount / servedSnapshot.length,
+                        minHeight: 6,
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        height: 130,
+                        child: ListView.builder(
+                          itemCount: servedSnapshot.length,
+                          itemBuilder: (context, i) {
+                            final name =
+                                baseNameOf(servedSnapshot[i].path);
+                            final pct =
+                                (serveProgress[i] * 100).toStringAsFixed(0);
+                            Widget trailing;
+                            if (serveStatus[i] == "done") {
+                              trailing = const Icon(Icons.check_circle,
+                                  color: Color(0xFF2F4A3C), size: 18);
+                            } else if (serveStatus[i] == "serving") {
+                              trailing = Text("$pct%",
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                      color: kGoldDeep,
+                                      fontFamily: 'Georgia'));
+                            } else if (serveStatus[i] == "error") {
+                              trailing = const Icon(Icons.error_outline,
+                                  color: Color(0xFF5C1F24), size: 18);
+                            } else {
+                              trailing = const Icon(
+                                  Icons.hourglass_empty,
+                                  color: kStoneGrey, size: 18);
+                            }
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 4),
+                              child: Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(name,
+                                            style: const TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w600,
+                                                fontFamily: 'Georgia'),
+                                            overflow:
+                                                TextOverflow.ellipsis),
+                                      ),
+                                      trailing,
+                                    ],
+                                  ),
+                                  const SizedBox(height: 3),
+                                  LinearProgressIndicator(
+                                    value: serveStatus[i] == "waiting"
+                                        ? 0.0
+                                        : serveProgress[i],
+                                    minHeight: 7,
+                                    borderRadius:
+                                        BorderRadius.circular(4),
+                                  ),
+                                  Text(
+                                    serveStatus[i] == "done"
+                                        ? "${formatBytes(serveTotals[i])} • Na-send"
+                                        : serveStatus[i] == "serving"
+                                            ? "${formatBytes(serveSent[i])} / ${formatBytes(serveTotals[i])}"
+                                            : serveStatus[i] == "error"
+                                                ? "Naputol — hulata mo-retry ang receiver"
+                                                : "Naghulat ug receiver... (${formatBytes(serveTotals[i])})",
+                                    style: const TextStyle(
+                                        fontSize: 10, color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Text("COLLECTION",
+                    style:
+                        classicalSmallCaps(size: 10, color: kGoldDeep)),
+                const SizedBox(width: 8),
+                const Expanded(child: Divider(color: kGoldSoft)),
+                Text("${userFiles.length} PIECES",
+                    style:
+                        classicalSmallCaps(size: 9, color: kStoneGrey)),
+              ],
+            ),
             const SizedBox(height: 8),
             Expanded(
-              child: userFiles.isEmpty
-                  ? const Center(child: Text("No files queued."))
-                  : ListView.builder(
-                      itemCount: userFiles.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          leading: const Icon(Icons.insert_drive_file),
-                          title: Text(baseNameOf(userFiles[index].path)),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () =>
-                                setState(() => userFiles.removeAt(index)),
-                          ),
-                        );
-                      },
-                    ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: kParchment,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: kGoldSoft, width: 1),
+                ),
+                child: userFiles.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                    color: kGoldSoft, width: 1.2),
+                              ),
+                              child: const Icon(
+                                  Icons.folder_open_outlined,
+                                  size: 28,
+                                  color: kStoneGrey),
+                            ),
+                            const SizedBox(height: 10),
+                            Text("The cabinet is empty",
+                                style: classicalHeading(
+                                    size: 13, color: kCharcoal)),
+                            const SizedBox(height: 4),
+                            Text("ADD FILES TO BEGIN",
+                                style: classicalSmallCaps(size: 9)),
+                          ],
+                        ),
+                      )
+                    : ListView.separated(
+                        itemCount: userFiles.length,
+                        separatorBuilder: (_, __) => const Divider(
+                            height: 1, color: kGoldSoft, indent: 56),
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            leading: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: kIvory,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                    color: kGoldSoft, width: 1),
+                              ),
+                              child: const Icon(
+                                  Icons.description_outlined,
+                                  size: 20,
+                                  color: kCharcoal),
+                            ),
+                            title: Text(
+                                baseNameOf(userFiles[index].path),
+                                style: const TextStyle(
+                                    fontFamily: 'Georgia',
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600)),
+                            subtitle: Text(
+                                formatBytes(_fileSizeOf(
+                                    userFiles[index])),
+                                style: const TextStyle(
+                                    fontSize: 11, color: kStoneGrey)),
+                            trailing: IconButton(
+                              icon: const Icon(
+                                  Icons.delete_outline,
+                                  color: Color(0xFF5C1F24),
+                                  size: 20),
+                              onPressed: () => setState(
+                                  () => userFiles.removeAt(index)),
+                            ),
+                          );
+                        },
+                      ),
+              ),
             ),
             const SizedBox(height: 12),
             Row(
@@ -1045,23 +1652,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: _pickFiles,
-                    icon: const Icon(Icons.add),
-                    label: const Text("Add Files"),
-                    style: OutlinedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(50)),
+                    icon: const Icon(Icons.add, size: 18),
+                    label: const Text("ADD"),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
+                  flex: 2,
                   child: ElevatedButton.icon(
                     onPressed: _showConfirmDialog,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: currentTheme,
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size.fromHeight(50),
-                    ),
-                    icon: const Icon(Icons.send),
-                    label: const Text("Confirm & Send"),
+                    icon: const Icon(Icons.send_outlined, size: 18),
+                    label: const Text("SEAL & SEND"),
                   ),
                 ),
               ],
@@ -1076,11 +1677,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Icon(Icons.download),
-                label: Text(
-                    _isReceiving ? "Receiving..." : "Receive from Sender"),
-                style: OutlinedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(50)),
+                    : const Icon(Icons.download_outlined, size: 18),
+                label: Text(_isReceiving
+                    ? "RECEIVING..."
+                    : "RECEIVE FROM SALON"),
               ),
             ),
           ],
@@ -1226,22 +1826,29 @@ class _ReceiveProgressDialogState extends State<ReceiveProgressDialog> {
         totalFiles == 0 ? 0.0 : _doneCount / totalFiles;
 
     return AlertDialog(
-      title: Text("Downloading ($_doneCount/$totalFiles)"),
+      title: Text("Reception ($_doneCount/$totalFiles)",
+          textAlign: TextAlign.center),
       content: SizedBox(
         width: double.maxFinite,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            const GoldDivider(width: 36),
+            const SizedBox(height: 12),
             // Overall progress
             Row(
               children: [
-                const Text("Overall: ",
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                Text("ENTIRE  ",
+                    style:
+                        classicalSmallCaps(size: 9, color: kGoldDeep)),
                 Expanded(
                   child: LinearProgressIndicator(value: overall),
                 ),
                 const SizedBox(width: 8),
-                Text("${(overall * 100).toStringAsFixed(0)}%"),
+                Text("${(overall * 100).toStringAsFixed(0)}%",
+                    style: const TextStyle(
+                        fontFamily: 'Georgia',
+                        fontWeight: FontWeight.w700)),
               ],
             ),
             const SizedBox(height: 12),
@@ -1257,17 +1864,20 @@ class _ReceiveProgressDialogState extends State<ReceiveProgressDialog> {
                   Widget trailing;
                   if (_status[i] == "done") {
                     trailing = const Icon(Icons.check_circle,
-                        color: Colors.green, size: 20);
+                        color: Color(0xFF2F4A3C), size: 20);
                   } else if (_status[i] == "error") {
-                    trailing =
-                        const Icon(Icons.error, color: Colors.red, size: 20);
+                    trailing = const Icon(Icons.error_outline,
+                        color: Color(0xFF5C1F24), size: 20);
                   } else if (_status[i] == "downloading") {
                     trailing = Text("$pct%",
                         style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 12));
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            color: kGoldDeep,
+                            fontFamily: 'Georgia'));
                   } else {
                     trailing = const Icon(Icons.hourglass_empty,
-                        color: Colors.grey, size: 20);
+                        color: kStoneGrey, size: 20);
                   }
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 6),
@@ -1280,7 +1890,8 @@ class _ReceiveProgressDialogState extends State<ReceiveProgressDialog> {
                               child: Text(name,
                                   style: const TextStyle(
                                       fontWeight: FontWeight.w600,
-                                      fontSize: 13),
+                                      fontSize: 13,
+                                      fontFamily: 'Georgia'),
                                   overflow: TextOverflow.ellipsis),
                             ),
                             trailing,
@@ -1299,14 +1910,14 @@ class _ReceiveProgressDialogState extends State<ReceiveProgressDialog> {
                         const SizedBox(height: 2),
                         Text(
                           _status[i] == "done"
-                              ? "${formatBytes(_totals[i])} • Humana"
+                              ? "${formatBytes(_totals[i])} • Received"
                               : _status[i] == "error"
-                                  ? "Napakyas — sulayi usab"
+                                  ? "Interrupted — please retry"
                                   : _status[i] == "waiting"
-                                      ? "Naghulat... (${formatBytes(_totals[i])})"
+                                      ? "Awaiting... (${formatBytes(_totals[i])})"
                                       : "${formatBytes(_received[i])} / ${formatBytes(_totals[i])}",
                           style: const TextStyle(
-                              fontSize: 11, color: Colors.grey),
+                              fontSize: 11, color: kStoneGrey),
                         ),
                       ],
                     ),
@@ -1327,13 +1938,13 @@ class _ReceiveProgressDialogState extends State<ReceiveProgressDialog> {
               });
               Navigator.pop(context, _doneCount);
             },
-            child: const Text("Cancel",
-                style: TextStyle(color: Colors.red)),
+            child: const Text("Withdraw",
+                style: TextStyle(color: Color(0xFF5C1F24))),
           ),
         if (_finished)
           ElevatedButton(
             onPressed: () => Navigator.pop(context, _doneCount),
-            child: Text(_doneCount == totalFiles ? "OK" : "Close"),
+            child: Text(_doneCount == totalFiles ? "GRACIAS" : "CLOSE"),
           ),
       ],
     );
