@@ -1,0 +1,148 @@
+name: Build iOS IPA
+
+# Mo-build ug IPA (iPhone installer) kada push sa main,
+# kada pull request, o manual via "Run workflow".
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  FLUTTER_VERSION: "3.47.x"
+  BUNDLE_ID: com.example.fileShared
+  # Usba ni kung naa kay kaugalingon nga bundle ID / team:
+  # APPLE_TEAM_ID: ABCDE12345
+
+jobs:
+  build-ipa:
+    name: Build unsigned IPA (sideload / testing)
+    runs-on: macos-latest
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Flutter doctor
+        run: flutter doctor -v
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze (dili mo-fail ang build kung naay info)
+        run: flutter analyze || true
+
+      # Gikinahanglan para sa iOS pods (file_picker, local_auth)
+      - name: Pod install
+        working-directory: ios
+        run: |
+          sudo gem install cocoapods -n /usr/local/bin || true
+          pod install --repo-update
+
+      # Unsigned IPA — pwede i-install via Sideloadly / AltStore / TrollStore,
+      # o i-re-sign sa imong kaugalingon nga certificate.
+      # Ang resulta: build/ios/ipa/*.ipa
+      - name: Build IPA (no codesign)
+        run: >
+          flutter build ipa
+          --no-codesign
+          --build-name=1.0.0
+          --build-number=${{ github.run_number }}
+
+      - name: List IPA output
+        run: ls -lh build/ios/ipa/
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa-run-${{ github.run_number }}
+          path: build/ios/ipa/*.ipa
+          if-no-files-found: error
+          retention-days: 14
+
+  # ------------------------------------------------------------------
+  # OPTIONAL: Signed IPA para sa App Store / TestFlight.
+  # Para ma-enable:
+  #  1. Sa GitHub repo > Settings > Secrets and variables > Actions,
+  #     pagbutang ug secrets:
+  #       APPLE_CERTIFICATE_BASE64  (imong .p12 export, base64)
+  #       APPLE_CERTIFICATE_PASSWORD
+  #       APPLE_PROVISIONING_PROFILE_BASE64 (imong .mobileprovision, base64)
+  #       APPLE_TEAM_ID
+  #       APPLE_KEYCHAIN_PASSWORD (bisan unsa nga random string)
+  #  2. Tangtanga ang `if: false` sa ubos para mo-run ang job.
+  # ------------------------------------------------------------------
+  build-ipa-signed:
+    name: Build signed IPA (App Store / TestFlight)
+    runs-on: macos-latest
+    timeout-minutes: 40
+    if: false # <-- tangtanga ni nga linya kung gusto nimo ug signed build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Install Apple certificate
+        env:
+          CERT_B64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          CERT_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.APPLE_KEYCHAIN_PASSWORD }}
+        run: |
+          CERT_PATH=$RUNNER_TEMP/build_certificate.p12
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          echo -n "$CERT_B64" | base64 --decode -o "$CERT_PATH"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$CERT_PATH" -P "$CERT_PASSWORD" \
+            -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security set-key-partition-list \
+            -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" \
+            "$KEYCHAIN_PATH"
+          security list-keychain -d user -s "$KEYCHAIN_PATH"
+
+      - name: Install provisioning profile
+        env:
+          PROFILE_B64: ${{ secrets.APPLE_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
+          echo -n "$PROFILE_B64" | base64 --decode -o "$PP_PATH"
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp "$PP_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/
+
+      - name: Pod install
+        working-directory: ios
+        run: pod install --repo-update
+
+      - name: Build signed IPA
+        run: >
+          flutter build ipa
+          --export-options-plist=ios/ExportOptions.plist
+          --build-name=1.0.0
+          --build-number=${{ github.run_number }}
+
+      - name: Upload signed IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa-signed-run-${{ github.run_number }}
+          path: build/ios/ipa/*.ipa
+          if-no-files-found: error
+          retention-days: 14

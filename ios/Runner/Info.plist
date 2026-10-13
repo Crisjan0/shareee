@@ -26,6 +26,16 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSFaceIDUsageDescription</key>
+	<string>We use Face ID to verify it is you before sending files.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need photo library access so you can pick files to share.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>We need camera access so you can pick photos to share.</string>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
